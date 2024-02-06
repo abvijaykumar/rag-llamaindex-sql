@@ -3,8 +3,6 @@ import os
 import os.path
 
 from dotenv import load_dotenv
-from llama_index import VectorStoreIndex, SimpleDirectoryReader, load_index_from_storage, ServiceContext
-from llama_index.storage import StorageContext
 from llama_index.response.pprint_utils import pprint_response
 from llama_index.llms import OpenAI
 from llama_index import SQLDatabase, ServiceContext
@@ -35,27 +33,12 @@ sql_database = SQLDatabase(engine, include_tables=["product_master", "inventory"
 query_engine = NLSQLTableQueryEngine(
     sql_database=sql_database,
     tables=["product_master", "inventory"],
+    verbose=True
 )
 
 def queryDB(query_str):
     response = query_engine.query(query_str)
     return response
-
-
-# @st.cache_resource(show_spinner=False)
-# def initialize(): 
-#     if not os.path.exists(storage_path):
-#         print("Index and Vector Store does not exisit, Creating a new store...")
-#         documents = SimpleDirectoryReader(documents_path).load_data()
-#         print("Documents: ")
-#         print(documents)
-#         index = VectorStoreIndex.from_documents(documents)
-#         index.storage_context.persist(persist_dir=storage_path)
-#     else:
-#         storage_context = StorageContext.from_defaults(persist_dir=storage_path)
-#         index = load_index_from_storage(storage_context)
-#     return index
-# index = initialize()
 
 st.title("Query the database - TEXT to SQL")
 if "messages" not in st.session_state.keys(): 
