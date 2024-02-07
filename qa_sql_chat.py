@@ -18,10 +18,7 @@ from sqlalchemy import (
     select,
 )
 
-
 load_dotenv()
-
-storage_path = "./vectorstore"
 db_url = f"postgresql+psycopg2://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}@{os.getenv('DB_HOST')}/{os.getenv('DB_NAME')}"
 
 llm = OpenAI(temperature=0.1, model="gpt-4-turbo-preview")
@@ -46,19 +43,17 @@ if "messages" not in st.session_state.keys():
         {"role": "assistant", "content": "Ask me a question !"}
     ]
 
-# chat_engine = index.as_chat_engine(chat_mode="condense_question", verbose=True)
-
 if prompt := st.chat_input("Your question"): 
     st.session_state.messages.append({"role": "user", "content": prompt})
 
 for message in st.session_state.messages: 
     with st.chat_message(message["role"]):
         st.write(message["content"])
-        
+
 if st.session_state.messages[-1]["role"] != "assistant":
     with st.chat_message("assistant"):
         with st.spinner("Thinking..."):
-            response = queryDB(prompt) #chat_engine.chat(prompt)
+            response = queryDB(prompt) 
             st.write(response.response)
             pprint_response(response, show_source=True)
             message = {"role": "assistant", "content": response.response}
